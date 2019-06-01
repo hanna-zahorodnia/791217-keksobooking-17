@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Hanna Zahorodnia](https://up.htmlacademy.ru/javascript/17/user/791217).
-* Наставник: `Неизвестно`.
+* Наставник: [Дмитрий Рябинин](https://up.htmlacademy.ru/javascript/17/user/63289).
 
 ---
 
