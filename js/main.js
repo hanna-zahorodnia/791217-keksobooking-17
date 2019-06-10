@@ -13,7 +13,6 @@ var OFFER_TYPES = [
 ];
 
 var locationNumber = 8;
-var ads = [];
 
 var map = document.querySelector('.map');
 map.classList.remove('map--faded');
@@ -52,10 +51,12 @@ var createAd = function (number) {
 };
 
 var generateAds = function (count) {
+  var data = [];
   for (var i = 1; i <= count; i++) {
     var ad = createAd(i);
-    ads.push(ad);
+    data.push(ad);
   }
+  return data;
 };
 
 var renderPin = function (pin) {
@@ -83,5 +84,5 @@ var renderPins = function (offers) {
   mapPins.appendChild(fragment);
 };
 
-generateAds(locationNumber);
+var ads = generateAds(locationNumber);
 renderPins(ads);
