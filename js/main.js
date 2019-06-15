@@ -12,13 +12,41 @@ var OFFER_TYPES = [
   'bungalo'
 ];
 
+var MAIN_PIN_WIDTH = 65;
+var MAIN_PIN_HEIGHT = 85;
+
 var locationNumber = 8;
 
 var map = document.querySelector('.map');
-map.classList.remove('map--faded');
+var mainPin = document.querySelector('.map__pin--main');
+
+var mainPinPositionY = parseInt(mainPin.style.top, 10) - MAIN_PIN_HEIGHT / 2;
+var mainPinPositionX = parseInt(mainPin.style.left, 10) - MAIN_PIN_WIDTH / 2;
+
+var adForm = document.querySelector('.ad-form');
+var fieldsets = adForm.querySelectorAll('fieldset');
+var addressField = adForm.querySelector('#address');
+
+var filterForm = document.querySelector('.map__filters');
+var filterOptions = filterForm.querySelectorAll('select');
+var filterFieldset = filterForm.querySelectorAll('fieldset');
 
 var mapPins = document.querySelector('.map__pins');
 var mapPinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
+
+var disableFormItems = function (items) {
+  for (var i = 0; i < items.length; i++) {
+    var item = items[i];
+    item.disabled = true;
+  }
+};
+
+var enableFormItems = function (items) {
+  for (var i = 0; i < items.length; i++) {
+    var item = items[i];
+    item.disabled = false;
+  }
+};
 
 var getrandomOfferType = function () {
   var randomType = Math.floor(Math.random() * OFFER_TYPES.length);
@@ -84,5 +112,20 @@ var renderPins = function (offers) {
   mapPins.appendChild(fragment);
 };
 
+disableFormItems(fieldsets);
+disableFormItems(filterOptions);
+disableFormItems(filterFieldset);
+
 var ads = generateAds(locationNumber);
-renderPins(ads);
+
+addressField.value = mainPinPositionX + ', ' + mainPinPositionY;
+
+mainPin.addEventListener('click', function () {
+  map.classList.remove('map--faded');
+  adForm.classList.remove('ad-form--disabled');
+  enableFormItems(fieldsets);
+  enableFormItems(filterOptions);
+  enableFormItems(filterFieldset);
+  renderPins(ads);
+});
+
