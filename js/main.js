@@ -20,9 +20,6 @@ var locationNumber = 8;
 var map = document.querySelector('.map');
 var mainPin = document.querySelector('.map__pin--main');
 
-var mainPinPositionY = parseInt(mainPin.style.top, 10) - MAIN_PIN_HEIGHT / 2;
-var mainPinPositionX = parseInt(mainPin.style.left, 10) - MAIN_PIN_WIDTH / 2;
-
 var adForm = document.querySelector('.ad-form');
 var fieldsets = adForm.querySelectorAll('fieldset');
 var addressField = adForm.querySelector('#address');
@@ -34,23 +31,37 @@ var filterFieldset = filterForm.querySelectorAll('fieldset');
 var mapPins = document.querySelector('.map__pins');
 var mapPinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
 
-var disableFormItems = function (items) {
+var makeDisabled = function (items, value) {
   for (var i = 0; i < items.length; i++) {
     var item = items[i];
-    item.disabled = true;
+    item.disabled = value;
   }
 };
 
-var enableFormItems = function (items) {
-  for (var i = 0; i < items.length; i++) {
-    var item = items[i];
-    item.disabled = false;
-  }
+var deactivatePage = function () {
+  makeDisabled(fieldsets, true);
+  makeDisabled(filterOptions, true);
+  makeDisabled(filterFieldset, true);
+};
+
+var activatePage = function () {
+  map.classList.remove('map--faded');
+  adForm.classList.remove('ad-form--disabled');
+  makeDisabled(fieldsets, false);
+  makeDisabled(filterOptions, false);
+  makeDisabled(filterFieldset, false);
 };
 
 var getrandomOfferType = function () {
   var randomType = Math.floor(Math.random() * OFFER_TYPES.length);
   return OFFER_TYPES[randomType];
+};
+
+var getMainPinLocation = function (pin, pinWidth, pinHeight) {
+  var mainPinPositionY = parseInt(pin.style.top, 10) - pinHeight;
+  var mainPinPositionX = parseInt(pin.style.left, 10) - pinWidth / 2;
+  var mainPinLocation = mainPinPositionX + ', ' + mainPinPositionY;
+  return mainPinLocation;
 };
 
 var getAvatar = function (number) {
@@ -112,20 +123,14 @@ var renderPins = function (offers) {
   mapPins.appendChild(fragment);
 };
 
-disableFormItems(fieldsets);
-disableFormItems(filterOptions);
-disableFormItems(filterFieldset);
+deactivatePage();
 
 var ads = generateAds(locationNumber);
 
-addressField.value = mainPinPositionX + ', ' + mainPinPositionY;
+addressField.value = getMainPinLocation(mainPin, MAIN_PIN_WIDTH, MAIN_PIN_HEIGHT);
 
 mainPin.addEventListener('click', function () {
-  map.classList.remove('map--faded');
-  adForm.classList.remove('ad-form--disabled');
-  enableFormItems(fieldsets);
-  enableFormItems(filterOptions);
-  enableFormItems(filterFieldset);
+  activatePage();
   renderPins(ads);
 });
 
