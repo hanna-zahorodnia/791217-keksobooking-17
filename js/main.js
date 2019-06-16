@@ -12,17 +12,59 @@ var OFFER_TYPES = [
   'bungalo'
 ];
 
+var MAIN_PIN_WIDTH = 65;
+var MAIN_PIN_HEIGHT = 85;
+
 var locationNumber = 8;
 
 var map = document.querySelector('.map');
-map.classList.remove('map--faded');
+var mainPin = document.querySelector('.map__pin--main');
+
+var adForm = document.querySelector('.ad-form');
+var fieldsets = adForm.querySelectorAll('fieldset');
+var addressField = adForm.querySelector('#address');
+
+var filterForm = document.querySelector('.map__filters');
+var filterOptions = filterForm.querySelectorAll('select');
+var filterFieldset = filterForm.querySelectorAll('fieldset');
 
 var mapPins = document.querySelector('.map__pins');
 var mapPinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
 
+var makeDisabled = function (items, value) {
+  for (var i = 0; i < items.length; i++) {
+    var item = items[i];
+    item.disabled = value;
+  }
+};
+
+var deactivatePage = function () {
+  makeDisabled(fieldsets, true);
+  makeDisabled(filterOptions, true);
+  makeDisabled(filterFieldset, true);
+};
+
+var activatePage = function () {
+  map.classList.remove('map--faded');
+  adForm.classList.remove('ad-form--disabled');
+  makeDisabled(fieldsets, false);
+  makeDisabled(filterOptions, false);
+  makeDisabled(filterFieldset, false);
+};
+
 var getrandomOfferType = function () {
   var randomType = Math.floor(Math.random() * OFFER_TYPES.length);
   return OFFER_TYPES[randomType];
+};
+
+var getMainPinLocation = function () {
+  var mainPinPositionY = parseInt(mainPin.style.top, 10) - MAIN_PIN_HEIGHT;
+  var mainPinPositionX = parseInt(mainPin.style.left, 10) - MAIN_PIN_WIDTH / 2;
+  var mainPinLocation = {
+    'x': mainPinPositionX,
+    'y': mainPinPositionY
+  };
+  return mainPinLocation;
 };
 
 var getAvatar = function (number) {
@@ -84,5 +126,14 @@ var renderPins = function (offers) {
   mapPins.appendChild(fragment);
 };
 
+deactivatePage();
+
 var ads = generateAds(locationNumber);
-renderPins(ads);
+var coordinates = getMainPinLocation();
+addressField.value = coordinates.x + ', ' + coordinates.y;
+
+mainPin.addEventListener('click', function () {
+  activatePage();
+  renderPins(ads);
+});
+
