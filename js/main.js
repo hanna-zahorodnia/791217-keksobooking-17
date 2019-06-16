@@ -57,10 +57,13 @@ var getrandomOfferType = function () {
   return OFFER_TYPES[randomType];
 };
 
-var getMainPinLocation = function (pin, pinWidth, pinHeight) {
-  var mainPinPositionY = parseInt(pin.style.top, 10) - pinHeight;
-  var mainPinPositionX = parseInt(pin.style.left, 10) - pinWidth / 2;
-  var mainPinLocation = mainPinPositionX + ', ' + mainPinPositionY;
+var getMainPinLocation = function () {
+  var mainPinPositionY = parseInt(mainPin.style.top, 10) - MAIN_PIN_HEIGHT;
+  var mainPinPositionX = parseInt(mainPin.style.left, 10) - MAIN_PIN_WIDTH / 2;
+  var mainPinLocation = {
+    'x': mainPinPositionX,
+    'y': mainPinPositionY
+  };
   return mainPinLocation;
 };
 
@@ -126,8 +129,8 @@ var renderPins = function (offers) {
 deactivatePage();
 
 var ads = generateAds(locationNumber);
-
-addressField.value = getMainPinLocation(mainPin, MAIN_PIN_WIDTH, MAIN_PIN_HEIGHT);
+var coordinates = getMainPinLocation();
+addressField.value = coordinates.x + ', ' + coordinates.y;
 
 mainPin.addEventListener('click', function () {
   activatePage();
