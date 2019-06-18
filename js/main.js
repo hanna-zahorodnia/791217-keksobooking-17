@@ -135,7 +135,7 @@ var renderPins = function (offers) {
 
 var onChangeType = function () {
   var priceInput = document.querySelector('#price');
-  var selectedOptionValue = typeSelect.options[typeSelect.selectedIndex].value;
+  var selectedOptionValue = typeSelect.value;
   priceInput.placeholder = OFFER_TYPES[selectedOptionValue];
   priceInput.min = OFFER_TYPES[selectedOptionValue];
 };
@@ -164,14 +164,13 @@ mainPin.addEventListener('click', function () {
   renderPins(ads);
 });
 
-var renderSuccessPage = function () {
+var showSuccess = function () {
   var successPage = successPageTemplate.cloneNode(true);
-  return successPage;
+  var main = document.querySelector('main');
+  main.appendChild(successPage);
 };
 
-adForm.addEventListener('submit', function () {
-  var main = document.querySelector('main');
-  var fragment = document.createDocumentFragment();
-  fragment.appendChild(renderSuccessPage());
-  main.appendChild(fragment);
+adForm.addEventListener('submit', function (evt) {
+  evt.preventDefault();
+  showSuccess();
 });
