@@ -38,6 +38,8 @@ var departure = document.querySelector('#timeout');
 
 var successPageTemplate = document.querySelector('#success').content.querySelector('.success');
 
+var isActive = false;
+
 var makeDisabled = function (items, value) {
   for (var i = 0; i < items.length; i++) {
     var item = items[i];
@@ -160,8 +162,11 @@ var coordinates = getMainPinLocation();
 addressField.value = coordinates.x + ', ' + coordinates.y;
 
 mainPin.addEventListener('click', function () {
-  activatePage();
-  renderPins(ads);
+  if (!isActive) {
+    activatePage();
+    renderPins(ads);
+  }
+  isActive = true;
 });
 
 var showSuccess = function () {
