@@ -17,6 +17,13 @@ var MAIN_PIN_HEIGHT = 85;
 
 var locationNumber = 8;
 
+var limits = {
+  top: 130,
+  right: 1150,
+  bottom: 630,
+  left: -25
+};
+
 var map = document.querySelector('.map');
 var mainPin = document.querySelector('.map__pin--main');
 
@@ -174,6 +181,64 @@ var showSuccess = function () {
   var main = document.querySelector('main');
   main.appendChild(successPage);
 };
+
+mainPin.addEventListener('mousedown', function (evt) {
+  evt.preventDefault();
+
+  var startCoords = {
+    x: evt.clientX,
+    y: evt.clientY
+  };
+
+  var onMouseMove = function (moveEvt) {
+    moveEvt.preventDefault();
+
+    if (!isActive) {
+      activatePage();
+      renderPins(ads);
+    }
+    isActive = true;
+
+    var shift = {
+      x: startCoords.x - moveEvt.clientX,
+      y: startCoords.y - moveEvt.clientY
+    };
+
+    startCoords = {
+      x: moveEvt.clientX,
+      y: moveEvt.clientY
+    };
+
+    var shiftX = (mainPin.offsetLeft - shift.x);
+    var shiftY = (mainPin.offsetTop - shift.y);
+
+    if (shiftX > limits.right) {
+      mainPin.style.left = limits.right + 'px';
+    } else if (shiftX < limits.left) {
+      mainPin.style.left = limits.left + 'px';
+    } else if (shiftY > limits.bottom) {
+      mainPin.style.top = limits.bottom + 'px';
+    } else if (shiftY < limits.top) {
+      mainPin.style.top = limits.top + 'px';
+    } else {
+      mainPin.style.left = shiftX + 'px';
+      mainPin.style.top = shiftY + 'px';
+    }
+  };
+
+  var onMouseUp = function (upEvt) {
+    upEvt.preventDefault();
+
+    coordinates = getMainPinLocation();
+    addressField.value = coordinates.x + ', ' + coordinates.y;
+
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseup', onMouseUp);
+  };
+
+  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('mouseup', onMouseUp);
+});
 
 adForm.addEventListener('submit', function (evt) {
   evt.preventDefault();
