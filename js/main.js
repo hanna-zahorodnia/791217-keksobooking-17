@@ -168,14 +168,6 @@ var ads = generateAds(locationNumber);
 var coordinates = getMainPinLocation();
 addressField.value = coordinates.x + ', ' + coordinates.y;
 
-mainPin.addEventListener('click', function () {
-  if (!isActive) {
-    activatePage();
-    renderPins(ads);
-  }
-  isActive = true;
-});
-
 var showSuccess = function () {
   var successPage = successPageTemplate.cloneNode(true);
   var main = document.querySelector('main');
@@ -213,17 +205,17 @@ mainPin.addEventListener('mousedown', function (evt) {
     var shiftY = (mainPin.offsetTop - shift.y);
 
     if (shiftX > limits.right) {
-      mainPin.style.left = limits.right + 'px';
+      shiftX = Math.min(shiftX, limits.right);
     } else if (shiftX < limits.left) {
-      mainPin.style.left = limits.left + 'px';
+      shiftX = Math.max(shiftX, limits.left);
     } else if (shiftY > limits.bottom) {
-      mainPin.style.top = limits.bottom + 'px';
+      shiftY = Math.min(shiftY, limits.bottom);
     } else if (shiftY < limits.top) {
-      mainPin.style.top = limits.top + 'px';
-    } else {
-      mainPin.style.left = shiftX + 'px';
-      mainPin.style.top = shiftY + 'px';
+      shiftY = Math.max(shiftY, limits.top);
     }
+
+    mainPin.style.left = shiftX + 'px';
+    mainPin.style.top = shiftY + 'px';
   };
 
   var onMouseUp = function (upEvt) {
