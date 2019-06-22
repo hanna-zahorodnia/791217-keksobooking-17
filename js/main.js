@@ -204,15 +204,10 @@ mainPin.addEventListener('mousedown', function (evt) {
     var shiftX = (mainPin.offsetLeft - shift.x);
     var shiftY = (mainPin.offsetTop - shift.y);
 
-    if (shiftX > limits.right) {
-      shiftX = Math.min(shiftX, limits.right);
-    } else if (shiftX < limits.left) {
-      shiftX = Math.max(shiftX, limits.left);
-    } else if (shiftY > limits.bottom) {
-      shiftY = Math.min(shiftY, limits.bottom);
-    } else if (shiftY < limits.top) {
-      shiftY = Math.max(shiftY, limits.top);
-    }
+    shiftX = Math.min(shiftX, limits.right);
+    shiftX = Math.max(shiftX, limits.left);
+    shiftY = Math.min(shiftY, limits.bottom);
+    shiftY = Math.max(shiftY, limits.top);
 
     mainPin.style.left = shiftX + 'px';
     mainPin.style.top = shiftY + 'px';
