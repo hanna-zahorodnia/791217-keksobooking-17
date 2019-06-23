@@ -1,8 +1,5 @@
 'use strict';
 (function () {
-  var MAIN_PIN_WIDTH = 65;
-  var MAIN_PIN_HEIGHT = 85;
-
   var limits = {
     top: 130,
     right: 1150,
@@ -13,47 +10,19 @@
   var map = document.querySelector('.map');
   var mainPin = document.querySelector('.map__pin--main');
 
-  var adForm = document.querySelector('.ad-form');
-  var fieldsets = adForm.querySelectorAll('fieldset');
-  var addressField = adForm.querySelector('#address');
-
-  var filterForm = document.querySelector('.map__filters');
-  var filterOptions = filterForm.querySelectorAll('select');
-  var filterFieldset = filterForm.querySelectorAll('fieldset');
-
   var mapPins = document.querySelector('.map__pins');
 
   var isActive = false;
 
-  var makeDisabled = function (items, value) {
-    for (var i = 0; i < items.length; i++) {
-      var item = items[i];
-      item.disabled = value;
-    }
-  };
+  var locationNumber = 8;
 
   var deactivatePage = function () {
-    makeDisabled(fieldsets, true);
-    makeDisabled(filterOptions, true);
-    makeDisabled(filterFieldset, true);
+    window.form.deactivate();
   };
 
   var activatePage = function () {
     map.classList.remove('map--faded');
-    adForm.classList.remove('ad-form--disabled');
-    makeDisabled(fieldsets, false);
-    makeDisabled(filterOptions, false);
-    makeDisabled(filterFieldset, false);
-  };
-
-  var getMainPinLocation = function () {
-    var mainPinPositionY = parseInt(mainPin.style.top, 10) - MAIN_PIN_HEIGHT;
-    var mainPinPositionX = parseInt(mainPin.style.left, 10) - MAIN_PIN_WIDTH / 2;
-    var mainPinLocation = {
-      'x': mainPinPositionX,
-      'y': mainPinPositionY
-    };
-    return mainPinLocation;
+    window.form.activate();
   };
 
   var renderPins = function (offers) {
@@ -67,8 +36,7 @@
 
   deactivatePage();
 
-  var coordinates = getMainPinLocation();
-  addressField.value = coordinates.x + ', ' + coordinates.y;
+  window.form.setAddress();
 
   mainPin.addEventListener('mousedown', function (evt) {
     evt.preventDefault();
@@ -83,7 +51,7 @@
 
       if (!isActive) {
         activatePage();
-        renderPins(window.generateAds);
+        renderPins(window.data.generateAds(locationNumber));
       }
       isActive = true;
 
@@ -112,8 +80,7 @@
     var onMouseUp = function (upEvt) {
       upEvt.preventDefault();
 
-      coordinates = getMainPinLocation();
-      addressField.value = coordinates.x + ', ' + coordinates.y;
+      window.form.setAddress();
 
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseup', onMouseUp);

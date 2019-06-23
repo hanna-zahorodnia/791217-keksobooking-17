@@ -1,6 +1,6 @@
 'use strict';
 
-window.generateAds = (function () {
+(function () {
   var MAP_WIDTH = 1200;
   var MAP_TOP_POINT = 130;
   var MAP_BOTTOM_POINT = 630;
@@ -11,8 +11,6 @@ window.generateAds = (function () {
     'house': 5000,
     'bungalo': 0
   };
-
-  var locationNumber = 8;
 
   var getAvatar = function (number) {
     return 'img/avatars/user0' + number + '.png';
@@ -53,6 +51,7 @@ window.generateAds = (function () {
     return data;
   };
 
-  var ads = generateAds(locationNumber);
-  return ads;
+  window.data = {
+    generateAds: generateAds
+  };
 })();
