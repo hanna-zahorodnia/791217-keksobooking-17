@@ -2,6 +2,8 @@
 (function () {
   var PIN_WIDTH = 50;
   var PIN_HEIGHT = 70;
+  var MAIN_PIN_WIDTH = 65;
+  var MAIN_PIN_HEIGHT = 85;
 
   var limits = {
     top: 130,
@@ -53,9 +55,19 @@
     mapPins.appendChild(fragment);
   };
 
+  var getMainPinLocation = function () {
+    var mainPinPositionY = parseInt(mainPin.style.top, 10) - MAIN_PIN_HEIGHT;
+    var mainPinPositionX = parseInt(mainPin.style.left, 10) - MAIN_PIN_WIDTH / 2;
+    var mainPinLocation = {
+      'x': mainPinPositionX,
+      'y': mainPinPositionY
+    };
+    return mainPinLocation;
+  };
+
   deactivatePage();
 
-  window.form.setAddress();
+  window.form.setAddress(getMainPinLocation());
 
   mainPin.addEventListener('mousedown', function (evt) {
     evt.preventDefault();
@@ -99,7 +111,7 @@
     var onMouseUp = function (upEvt) {
       upEvt.preventDefault();
 
-      window.form.setAddress();
+      window.form.setAddress(getMainPinLocation());
 
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseup', onMouseUp);

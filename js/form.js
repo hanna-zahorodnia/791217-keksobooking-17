@@ -1,17 +1,12 @@
 'use strict';
 (function () {
 
-  var MAIN_PIN_WIDTH = 65;
-  var MAIN_PIN_HEIGHT = 85;
-
   var OFFER_TYPES = {
     'palace': 10000,
     'flat': 1000,
     'house': 5000,
     'bungalo': 0
   };
-
-  var mainPin = document.querySelector('.map__pin--main');
 
   var adForm = document.querySelector('.ad-form');
   var fieldsets = adForm.querySelectorAll('fieldset');
@@ -45,18 +40,7 @@
     makeDisabled(filterFieldset, false);
   };
 
-  var getMainPinLocation = function () {
-    var mainPinPositionY = parseInt(mainPin.style.top, 10) - MAIN_PIN_HEIGHT;
-    var mainPinPositionX = parseInt(mainPin.style.left, 10) - MAIN_PIN_WIDTH / 2;
-    var mainPinLocation = {
-      'x': mainPinPositionX,
-      'y': mainPinPositionY
-    };
-    return mainPinLocation;
-  };
-
-  var setAddress = function () {
-    var coordinates = getMainPinLocation();
+  var setAddress = function (coordinates) {
     addressField.value = coordinates.x + ', ' + coordinates.y;
   };
 
