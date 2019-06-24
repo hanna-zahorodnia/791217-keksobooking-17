@@ -70,8 +70,16 @@
   arrival.addEventListener('change', onChangeTimeArrival);
   departure.addEventListener('change', onChangeTimeDeparture);
 
+  var SuccessHandler = function () {
+    window.result.showSuccess();
+  };
+
+  var ErrorHandler = function () {
+    window.result.showError();
+  };
+
   adForm.addEventListener('submit', function (evt) {
     evt.preventDefault();
-    window.showSuccess();
+    window.upload(new FormData(adForm), SuccessHandler, ErrorHandler);
   });
 })();

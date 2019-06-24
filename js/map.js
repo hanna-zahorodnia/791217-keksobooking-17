@@ -19,7 +19,7 @@
 
   var isActive = false;
 
-  var locationNumber = 8;
+  // var locationNumber = 8;
 
   var deactivatePage = function () {
     window.form.deactivate();
@@ -46,13 +46,14 @@
     return mapPin;
   };
 
-  var renderPins = function (offers) {
-    var fragment = document.createDocumentFragment();
-    for (var i = 0; i < offers.length; i++) {
-      fragment.appendChild(renderPin(offers[i]));
-    }
-
-    mapPins.appendChild(fragment);
+  var renderPins = function () {
+    window.load(function (offers) {
+      var fragment = document.createDocumentFragment();
+      for (var i = 0; i < offers.length; i++) {
+        fragment.appendChild(renderPin(offers[i]));
+      }
+      mapPins.appendChild(fragment);
+    });
   };
 
   var getMainPinLocation = function () {
@@ -82,7 +83,7 @@
 
       if (!isActive) {
         activatePage();
-        renderPins(window.data.generateAds(locationNumber));
+        renderPins();
       }
       isActive = true;
 
