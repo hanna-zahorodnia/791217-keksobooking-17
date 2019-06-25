@@ -70,16 +70,16 @@
   arrival.addEventListener('change', onChangeTimeArrival);
   departure.addEventListener('change', onChangeTimeDeparture);
 
-  var SuccessHandler = function () {
+  var successHandler = function () {
     window.result.showSuccess();
   };
 
-  var ErrorHandler = function () {
+  var errorHandler = function () {
     window.result.showError();
   };
 
   adForm.addEventListener('submit', function (evt) {
     evt.preventDefault();
-    window.upload(new FormData(adForm), SuccessHandler, ErrorHandler);
+    window.server.upload(new FormData(adForm), successHandler, errorHandler);
   });
 })();

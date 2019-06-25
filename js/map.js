@@ -47,7 +47,7 @@
   };
 
   var renderPins = function () {
-    window.load(function (offers) {
+    window.server.load(function (offers) {
       var fragment = document.createDocumentFragment();
       for (var i = 0; i < offers.length; i++) {
         fragment.appendChild(renderPin(offers[i]));
