@@ -46,15 +46,20 @@
     return mapPin;
   };
 
-  var renderPins = function () {
+  var pins = [];
+
+  var renderPins = function (data) {
+    pins = data;
     window.server.load(function (offers) {
+      var takeNumber = offers.length > 5 ? 5 : offers.length;
       var fragment = document.createDocumentFragment();
-      for (var i = 0; i < offers.length; i++) {
+      for (var i = 0; i < takeNumber; i++) {
         fragment.appendChild(renderPin(offers[i]));
       }
       mapPins.appendChild(fragment);
     });
   };
+
 
   var getMainPinLocation = function () {
     var mainPinPositionY = parseInt(mainPin.style.top, 10) - MAIN_PIN_HEIGHT;
@@ -64,6 +69,10 @@
       'y': mainPinPositionY
     };
     return mainPinLocation;
+  };
+
+  window.map = {
+    getMainPinLocation: getMainPinLocation
   };
 
   deactivatePage();
@@ -83,7 +92,7 @@
 
       if (!isActive) {
         activatePage();
-        renderPins();
+        renderPins(pins);
       }
       isActive = true;
 
@@ -120,5 +129,23 @@
 
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseup', onMouseUp);
+  });
+
+  var housingTypeSelect = document.querySelector('#housing-type');
+  var housingType;
+
+  var updatePins = function () {
+    var sameType = pins
+    .filter(function (it) {
+      return it.offer.type === housingType;
+    })
+    .slice(0, 5);
+    renderPins(sameType);
+  };
+
+  housingTypeSelect.addEventListener('change', function () {
+    var selectedHousingType = housingTypeSelect.value;
+    housingType = selectedHousingType;
+    updatePins();
   });
 })();

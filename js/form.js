@@ -8,6 +8,18 @@
     'bungalo': 0
   };
 
+  var START_POINTS = {
+    'left': 570,
+    'top': 375
+  };
+
+  var roomsToCapacity = {
+    '1': [1],
+    '2': [1, 2],
+    '3': [1, 2, 3],
+    '100': [0]
+  };
+
   var adForm = document.querySelector('.ad-form');
   var fieldsets = adForm.querySelectorAll('fieldset');
   var filterForm = document.querySelector('.map__filters');
@@ -19,6 +31,12 @@
 
   var arrival = document.querySelector('#timein');
   var departure = document.querySelector('#timeout');
+  var roomsSelect = document.querySelector('#room_number');
+  var capacity = document.querySelector('#capacity');
+
+  var resetBtn = document.querySelector('.ad-form__reset');
+  var map = document.querySelector('.map');
+  var mainPin = document.querySelector('.map__pin--main');
 
   var makeDisabled = function (items, value) {
     for (var i = 0; i < items.length; i++) {
@@ -78,8 +96,44 @@
     window.result.showError();
   };
 
+  var onChangeRoom = function () {
+    var selectedOptionValue = parseInt(roomsSelect[roomsSelect.selectedIndex].value, 10);
+    capacity.value = selectedOptionValue;
+    if (roomsSelect.selectedIndex === 3) {
+      capacity.value = roomsToCapacity['100'];
+    }
+    var roomsArray = roomsToCapacity[selectedOptionValue];
+    for (var i = 0; i < capacity.length; i++) {
+      var capacityValue = parseInt(capacity[i].value, 10);
+      if (roomsArray.indexOf(capacityValue) < 0) {
+        capacity[i].disabled = true;
+      } else {
+        capacity[i].disabled = false;
+      }
+    }
+  };
+
+  roomsSelect.addEventListener('change', onChangeRoom);
+
   adForm.addEventListener('submit', function (evt) {
     evt.preventDefault();
     window.server.upload(new FormData(adForm), successHandler, errorHandler);
+  });
+
+
+  var isActive = true;
+
+  resetBtn.addEventListener('click', function (evt) {
+    evt.preventDefault();
+    adForm.reset();
+    if (isActive) {
+      adForm.classList.add('ad-form--disabled');
+      map.classList.add('map--faded');
+    }
+    isActive = false;
+    mainPin.style.left = START_POINTS['left'] + 'px';
+    mainPin.style.top = START_POINTS['top'] + 'px';
+    deactivate();
+    setAddress(window.map.getMainPinLocation());
   });
 })();
