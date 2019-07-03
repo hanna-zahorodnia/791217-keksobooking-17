@@ -192,7 +192,7 @@
       return item.offer.price;
     }
     return calculatePriceinWords(item.offer.price) === selectedHousingPrice;
-  }
+  };
 
   filterForm.addEventListener('change', function () {
     var newPins = pins.filter(checkType)
