@@ -181,9 +181,9 @@
   var checkRooms = function (item) {
     var selectedRoomNumber = housingRoomSelect.value;
     if (selectedRoomNumber === 'any') {
-      return item.offer.rooms;
+      return true;
     }
-    return item.offer.rooms === selectedRoomNumber;
+    return item.offer.rooms.toString() === selectedRoomNumber;
   };
 
   var checkPrice = function (item) {
