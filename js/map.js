@@ -64,8 +64,7 @@
     mapPin.querySelector('img').src = pinImg;
     mapPin.querySelector('img').alt = pinType;
     mapPin.addEventListener('click', function () {
-      window.card.deletePopup();
-      window.card.addPopup(pin);
+      window.card.show(pin);
     });
 
     return mapPin;

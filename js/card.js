@@ -10,13 +10,12 @@
   };
 
   var main = document.querySelector('main');
-  var cardList = main.querySelectorAll('.map__card');
   var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
   var map = document.querySelector('.map');
 
   main.addEventListener('click', function (evt) {
     if (evt.target.matches('.popup__close')) {
-      deletePopup();
+      hide();
     }
   });
 
@@ -34,7 +33,7 @@
     }
   };
 
-  var renderPopup = function (card) {
+  var render = function (card) {
     var offerCard = cardTemplate.cloneNode(true);
     offerCard.querySelector('.popup__avatar').src = card.author.avatar;
     offerCard.querySelector('.popup__title').textContent = card.offer.title;
@@ -51,27 +50,25 @@
 
   var onCardEscPress = function (evt) {
     if (evt.keyCode === ESC_BUTTON) {
-      deletePopup();
+      hide();
     }
   };
 
-  var deletePopup = function () {
-    if (cardList.length === 1) {
-      cardList[0].remove();
+  var hide = function () {
+    var cardElement = main.querySelector('.map__card');
+    if (cardElement) {
+      document.removeEventListener('keydown', onCardEscPress);
+      cardElement.remove();
     }
-    document.removeEventListener('keydown', onCardEscPress);
   };
 
-  var addPopup = function (сard) {
-    if (cardList.length < 1) {
-      map.appendChild(renderPopup(сard));
-    }
+  var show = function (data) {
+    hide();
+    map.appendChild(render(data));
     document.addEventListener('keydown', onCardEscPress);
   };
 
   window.card = {
-    renderPopup: renderPopup,
-    deletePopup: deletePopup,
-    addPopup: addPopup
+    show: show
   };
 })();
