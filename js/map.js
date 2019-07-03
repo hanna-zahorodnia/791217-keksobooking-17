@@ -12,17 +12,38 @@
     left: -25
   };
 
+  var START_POINTS = {
+    'left': 570,
+    'top': 375
+  };
+
   var map = document.querySelector('.map');
   var mainPin = document.querySelector('.map__pin--main');
   var mapPinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
   var mapPins = document.querySelector('.map__pins');
+  var filterForm = document.querySelector('.map__filters');
+  var housingTypeSelect = document.querySelector('#housing-type');
+  var housingPriceSelect = document.querySelector('#housing-price');
+  var housingRoomSelect = document.querySelector('#housing-rooms');
 
   var isActive = false;
+  var pins = [];
 
   // var locationNumber = 8;
 
-  var deactivatePage = function () {
-    window.form.deactivate();
+  var removePins = function () {
+    var pinsList = document.querySelectorAll('.map__pins > button:not(.map__pin--main)');
+    for (var i = 0; i < pinsList.length; i++) {
+      pinsList[i].remove();
+    }
+  };
+
+  var deactivateMap = function () {
+    map.classList.add('map--faded');
+    mainPin.style.left = START_POINTS['left'] + 'px';
+    mainPin.style.top = START_POINTS['top'] + 'px';
+    removePins();
+    isActive = false;
   };
 
   var activatePage = function () {
@@ -42,18 +63,28 @@
     mapPin.style.top = pinPositionY;
     mapPin.querySelector('img').src = pinImg;
     mapPin.querySelector('img').alt = pinType;
+    mapPin.addEventListener('click', function () {
+      window.card.show(pin);
+    });
 
     return mapPin;
   };
 
-  var renderPins = function () {
-    window.server.load(function (offers) {
-      var fragment = document.createDocumentFragment();
-      for (var i = 0; i < offers.length; i++) {
-        fragment.appendChild(renderPin(offers[i]));
-      }
-      mapPins.appendChild(fragment);
-    });
+  var errorHandler = function () {
+    window.result.showError();
+  };
+
+  window.server.load(function (data) {
+    pins = data;
+  }, errorHandler);
+
+  var renderPins = function (offers) {
+    var fragment = document.createDocumentFragment();
+    for (var i = 0; i < offers.length; i++) {
+      fragment.appendChild(renderPin(offers[i]));
+    }
+
+    mapPins.appendChild(fragment);
   };
 
   var getMainPinLocation = function () {
@@ -66,8 +97,12 @@
     return mainPinLocation;
   };
 
-  deactivatePage();
+  window.map = {
+    getMainPinLocation: getMainPinLocation,
+    deactivateMap: deactivateMap
+  };
 
+  window.form.deactivate();
   window.form.setAddress(getMainPinLocation());
 
   mainPin.addEventListener('mousedown', function (evt) {
@@ -83,7 +118,7 @@
 
       if (!isActive) {
         activatePage();
-        renderPins();
+        renderPins(pins);
       }
       isActive = true;
 
@@ -120,5 +155,50 @@
 
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseup', onMouseUp);
+  });
+
+  var calculatePriceinWords = function (price) {
+    var priceinWords;
+    if (price < 10000) {
+      priceinWords = 'low';
+    } else if (price >= 10000 && price < 50000) {
+      priceinWords = 'middle';
+    } else if (price >= 50000) {
+      priceinWords = 'high';
+    }
+    return priceinWords;
+  };
+
+  var checkType = function (item) {
+    var selectedHousingType = housingTypeSelect.value;
+    if (selectedHousingType === 'any') {
+      return item.offer.type;
+    }
+    return item.offer.type === selectedHousingType;
+  };
+
+  var checkRooms = function (item) {
+    var selectedRoomNumber = housingRoomSelect.value;
+    if (selectedRoomNumber === 'any') {
+      return true;
+    }
+    return item.offer.rooms.toString() === selectedRoomNumber;
+  };
+
+  var checkPrice = function (item) {
+    var selectedHousingPrice = housingPriceSelect.value;
+    if (selectedHousingPrice === 'any') {
+      return item.offer.price;
+    }
+    return calculatePriceinWords(item.offer.price) === selectedHousingPrice;
+  };
+
+  filterForm.addEventListener('change', function () {
+    var newPins = pins.filter(checkType)
+                      .filter(checkRooms)
+                      .filter(checkPrice)
+                      .slice(0, 5);
+    removePins();
+    renderPins(newPins);
   });
 })();
