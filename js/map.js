@@ -12,17 +12,38 @@
     left: -25
   };
 
+  var START_POINTS = {
+    'left': 570,
+    'top': 375
+  };
+
   var map = document.querySelector('.map');
   var mainPin = document.querySelector('.map__pin--main');
   var mapPinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
   var mapPins = document.querySelector('.map__pins');
+  var filterForm = document.querySelector('.map__filters');
+  var housingTypeSelect = document.querySelector('#housing-type');
+  var housingPriceSelect = document.querySelector('#housing-price');
+  var housingRoomSelect = document.querySelector('#housing-rooms');
 
   var isActive = false;
+  var pins = [];
 
   // var locationNumber = 8;
 
-  var deactivatePage = function () {
-    window.form.deactivate();
+  var removePins = function () {
+    var pinsList = document.querySelectorAll('.map__pins > button:not(.map__pin--main)');
+    for (var i = 0; i < pinsList.length; i++) {
+      pinsList[i].remove();
+    }
+  };
+
+  var deactivateMap = function () {
+    map.classList.add('map--faded');
+    mainPin.style.left = START_POINTS['left'] + 'px';
+    mainPin.style.top = START_POINTS['top'] + 'px';
+    removePins();
+    isActive = false;
   };
 
   var activatePage = function () {
@@ -42,24 +63,30 @@
     mapPin.style.top = pinPositionY;
     mapPin.querySelector('img').src = pinImg;
     mapPin.querySelector('img').alt = pinType;
+    mapPin.addEventListener('click', function () {
+      window.card.deletePopup();
+      window.card.addPopup(pin);
+    });
 
     return mapPin;
   };
 
-  var pins = [];
-
-  var renderPins = function (data) {
-    pins = data;
-    window.server.load(function (offers) {
-      var takeNumber = offers.length > 5 ? 5 : offers.length;
-      var fragment = document.createDocumentFragment();
-      for (var i = 0; i < takeNumber; i++) {
-        fragment.appendChild(renderPin(offers[i]));
-      }
-      mapPins.appendChild(fragment);
-    });
+  var errorHandler = function () {
+    window.result.showError();
   };
 
+  window.server.load(function (data) {
+    pins = data;
+  }, errorHandler);
+
+  var renderPins = function (offers) {
+    var fragment = document.createDocumentFragment();
+    for (var i = 0; i < offers.length; i++) {
+      fragment.appendChild(renderPin(offers[i]));
+    }
+
+    mapPins.appendChild(fragment);
+  };
 
   var getMainPinLocation = function () {
     var mainPinPositionY = parseInt(mainPin.style.top, 10) - MAIN_PIN_HEIGHT;
@@ -72,11 +99,11 @@
   };
 
   window.map = {
-    getMainPinLocation: getMainPinLocation
+    getMainPinLocation: getMainPinLocation,
+    deactivateMap: deactivateMap
   };
 
-  deactivatePage();
-
+  window.form.deactivate();
   window.form.setAddress(getMainPinLocation());
 
   mainPin.addEventListener('mousedown', function (evt) {
@@ -131,21 +158,48 @@
     document.addEventListener('mouseup', onMouseUp);
   });
 
-  var housingTypeSelect = document.querySelector('#housing-type');
-  var housingType;
-
-  var updatePins = function () {
-    var sameType = pins
-    .filter(function (it) {
-      return it.offer.type === housingType;
-    })
-    .slice(0, 5);
-    renderPins(sameType);
+  var calculatePriceinWords = function (price) {
+    var priceinWords;
+    if (price < 10000) {
+      priceinWords = 'low';
+    } else if (price >= 10000 && price < 50000) {
+      priceinWords = 'middle';
+    } else if (price >= 50000) {
+      priceinWords = 'high';
+    }
+    return priceinWords;
   };
 
-  housingTypeSelect.addEventListener('change', function () {
+  var checkType = function (item) {
     var selectedHousingType = housingTypeSelect.value;
-    housingType = selectedHousingType;
-    updatePins();
+    if (selectedHousingType === 'any') {
+      return item.offer.type;
+    }
+    return item.offer.type === selectedHousingType;
+  };
+
+  var checkRooms = function (item) {
+    var selectedRoomNumber = housingRoomSelect.value;
+    if (selectedRoomNumber === 'any') {
+      return item.offer.rooms;
+    }
+    return item.offer.rooms === selectedRoomNumber;
+  };
+
+  var checkPrice = function (item) {
+    var selectedHousingPrice = housingPriceSelect.value;
+    if (selectedHousingPrice === 'any') {
+      return item.offer.price;
+    }
+    return calculatePriceinWords(item.offer.price) === selectedHousingPrice;
+  }
+
+  filterForm.addEventListener('change', function () {
+    var newPins = pins.filter(checkType)
+                      .filter(checkRooms)
+                      .filter(checkPrice)
+                      .slice(0, 5);
+    removePins();
+    renderPins(newPins);
   });
 })();

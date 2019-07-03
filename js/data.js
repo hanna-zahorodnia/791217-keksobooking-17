@@ -52,6 +52,6 @@
   };
 
   window.data = {
-    generateAds: generateAds
+    generateAds: generateAds,
   };
 })();

@@ -8,11 +8,6 @@
     'bungalo': 0
   };
 
-  var START_POINTS = {
-    'left': 570,
-    'top': 375
-  };
-
   var roomsToCapacity = {
     '1': [1],
     '2': [1, 2],
@@ -35,8 +30,6 @@
   var capacity = document.querySelector('#capacity');
 
   var resetBtn = document.querySelector('.ad-form__reset');
-  var map = document.querySelector('.map');
-  var mainPin = document.querySelector('.map__pin--main');
 
   var makeDisabled = function (items, value) {
     for (var i = 0; i < items.length; i++) {
@@ -46,6 +39,7 @@
   };
 
   var deactivate = function () {
+    adForm.classList.add('ad-form--disabled');
     makeDisabled(fieldsets, true);
     makeDisabled(filterOptions, true);
     makeDisabled(filterFieldset, true);
@@ -97,9 +91,9 @@
   };
 
   var onChangeRoom = function () {
-    var selectedOptionValue = parseInt(roomsSelect[roomsSelect.selectedIndex].value, 10);
+    var selectedOptionValue = parseInt(roomsSelect.value, 10);
     capacity.value = selectedOptionValue;
-    if (roomsSelect.selectedIndex === 3) {
+    if (selectedOptionValue === 100) {
       capacity.value = roomsToCapacity['100'];
     }
     var roomsArray = roomsToCapacity[selectedOptionValue];
@@ -120,20 +114,11 @@
     window.server.upload(new FormData(adForm), successHandler, errorHandler);
   });
 
-
-  var isActive = true;
-
   resetBtn.addEventListener('click', function (evt) {
     evt.preventDefault();
     adForm.reset();
-    if (isActive) {
-      adForm.classList.add('ad-form--disabled');
-      map.classList.add('map--faded');
-    }
-    isActive = false;
-    mainPin.style.left = START_POINTS['left'] + 'px';
-    mainPin.style.top = START_POINTS['top'] + 'px';
     deactivate();
+    window.map.deactivateMap();
     setAddress(window.map.getMainPinLocation());
   });
 })();
