@@ -12,6 +12,7 @@
   var main = document.querySelector('main');
   var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
   var map = document.querySelector('.map');
+  var filters = map.querySelector('.map__filters-container');
 
   main.addEventListener('click', function (evt) {
     if (evt.target.matches('.popup__close')) {
@@ -33,6 +34,17 @@
     }
   };
 
+  var addPhotos = function (obj, arr) {
+    var photos = obj.querySelector('.popup__photos');
+
+    for (var i = 0; i < arr.length; i++) {
+      var photo = obj.querySelector('.popup__photo').cloneNode(true);
+      photo.src = arr[i];
+      photos.appendChild(photo);
+    }
+    photos.removeChild(photos.children[0]);
+  };
+
   var render = function (card) {
     var offerCard = cardTemplate.cloneNode(true);
     offerCard.querySelector('.popup__avatar').src = card.author.avatar;
@@ -44,6 +56,7 @@
     offerCard.querySelector('.popup__text--time').textContent = 'Заезд после ' + card.offer.checkin + ', выезд до ' + card.offer.checkout;
     getOfferFeatures(offerCard, card.offer.features);
     offerCard.querySelector('.popup__description').textContent = card.offer.description;
+    addPhotos(offerCard, card.offer.photos);
 
     return offerCard;
   };
@@ -59,12 +72,14 @@
     if (cardElement) {
       document.removeEventListener('keydown', onCardEscPress);
       cardElement.remove();
+      var activePin = map.querySelector('.map__pin--active');
+      activePin.classList.remove('map__pin--active');
     }
   };
 
   var show = function (data) {
     hide();
-    map.appendChild(render(data));
+    map.insertBefore(render(data), filters);
     document.addEventListener('keydown', onCardEscPress);
   };
 
@@ -72,3 +87,4 @@
     show: show
   };
 })();
+
