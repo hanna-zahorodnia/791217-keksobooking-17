@@ -109,6 +109,32 @@
 
   roomsSelect.addEventListener('change', onChangeRoom);
 
+  var avatarChooser = document.querySelector('.ad-form-header__input');
+  var preview = document.querySelector('.ad-form-header__preview img');
+
+  var FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
+
+  avatarChooser.addEventListener('change', function () {
+    var file = avatarChooser.files[0];
+    var fileName = file.name.toLowerCase();
+
+    if (file) {
+      var matches = FILE_TYPES.some(function (item) {
+        return fileName.endsWith(item);
+      });
+
+      if (matches) {
+        var reader = new FileReader();
+
+        reader.addEventListener('load', function () {
+          preview.src = reader.result;
+        });
+
+        reader.readAsDataURL(file);
+      }
+    }
+  });
+
   adForm.addEventListener('submit', function (evt) {
     evt.preventDefault();
     window.server.upload(new FormData(adForm), successHandler, errorHandler);
@@ -122,3 +148,4 @@
     setAddress(window.map.getMainPinLocation());
   });
 })();
+

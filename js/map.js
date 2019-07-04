@@ -25,6 +25,7 @@
   var housingTypeSelect = document.querySelector('#housing-type');
   var housingPriceSelect = document.querySelector('#housing-price');
   var housingRoomSelect = document.querySelector('#housing-rooms');
+  var housingGuestSelect = document.querySelector('#housing-guests');
 
   var isActive = false;
   var pins = [];
@@ -64,7 +65,9 @@
     mapPin.querySelector('img').src = pinImg;
     mapPin.querySelector('img').alt = pinType;
     mapPin.addEventListener('click', function () {
+
       window.card.show(pin);
+      mapPin.classList.add('map__pin--active');
     });
 
     return mapPin;
@@ -99,7 +102,7 @@
 
   window.map = {
     getMainPinLocation: getMainPinLocation,
-    deactivateMap: deactivateMap
+    deactivateMap: deactivateMap,
   };
 
   window.form.deactivate();
@@ -185,6 +188,16 @@
     return item.offer.rooms.toString() === selectedRoomNumber;
   };
 
+  var checkGuests = function (item) {
+    var selectedGuestNumber = housingGuestSelect.value;
+    if (selectedGuestNumber === 'any') {
+      return true;
+    } else if (selectedGuestNumber === '0') {
+      return false;
+    }
+    return item.offer.guests.toString() === selectedGuestNumber;
+  };
+
   var checkPrice = function (item) {
     var selectedHousingPrice = housingPriceSelect.value;
     if (selectedHousingPrice === 'any') {
@@ -193,12 +206,22 @@
     return calculatePriceinWords(item.offer.price) === selectedHousingPrice;
   };
 
+  var checkFeature = function (item) {
+    var checkedFeatures = Array.from(filterForm.querySelectorAll('.map__checkbox:checked'));
+    return checkedFeatures.every(function (el) {
+      return item.offer.features.includes(el.value);
+    });
+  };
+
   filterForm.addEventListener('change', function () {
     var newPins = pins.filter(checkType)
                       .filter(checkRooms)
                       .filter(checkPrice)
+                      .filter(checkGuests)
+                      .filter(checkFeature)
                       .slice(0, 5);
     removePins();
     renderPins(newPins);
   });
 })();
+
