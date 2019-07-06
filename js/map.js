@@ -5,16 +5,16 @@
   var MAIN_PIN_WIDTH = 65;
   var MAIN_PIN_HEIGHT = 85;
 
+  var START_POINTS = {
+    'left': 570,
+    'top': 375
+  };
+
   var limits = {
     top: 130,
     right: 1150,
     bottom: 630,
     left: -25
-  };
-
-  var START_POINTS = {
-    'left': 570,
-    'top': 375
   };
 
   var map = document.querySelector('.map');
