@@ -8,6 +8,8 @@
     'bungalo': 0
   };
 
+  var FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
+
   var roomsToCapacity = {
     '1': [1],
     '2': [1, 2],
@@ -28,6 +30,12 @@
   var departure = document.querySelector('#timeout');
   var roomsSelect = document.querySelector('#room_number');
   var capacity = document.querySelector('#capacity');
+
+  var avatarChooser = adForm.querySelector('.ad-form-header__input');
+  var preview = adForm.querySelector('.ad-form-header__preview img');
+  var photoContainer = adForm.querySelector('.ad-form__photo-container');
+  var photoChooser = adForm.querySelector('.ad-form__input');
+  var photoPreview = adForm.querySelector('.ad-form__photo');
 
   var resetBtn = document.querySelector('.ad-form__reset');
 
@@ -109,11 +117,6 @@
 
   roomsSelect.addEventListener('change', onChangeRoom);
 
-  var avatarChooser = document.querySelector('.ad-form-header__input');
-  var preview = document.querySelector('.ad-form-header__preview img');
-
-  var FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
-
   avatarChooser.addEventListener('change', function () {
     var file = avatarChooser.files[0];
     var fileName = file.name.toLowerCase();
@@ -135,9 +138,47 @@
     }
   });
 
+  var createPhoto = function () {
+    var img = document.createElement('img');
+    img.width = '70';
+    img.height = '70';
+    return img;
+  };
+
+  photoChooser.addEventListener('change', function () {
+    var file = photoChooser.files[0];
+    var fileName = file.name.toLowerCase();
+
+    if (file) {
+      var matches = FILE_TYPES.some(function (item) {
+        return fileName.endsWith(item);
+      });
+
+      if (matches) {
+        var img = createPhoto();
+
+        var reader = new FileReader();
+
+        reader.addEventListener('load', function () {
+          img.src = reader.result;
+        });
+
+        reader.readAsDataURL(file);
+
+        var photoBox = photoPreview.cloneNode(true);
+        photoBox.appendChild(img);
+        photoContainer.insertBefore(photoBox, photoPreview);
+      }
+    }
+  });
+
   adForm.addEventListener('submit', function (evt) {
     evt.preventDefault();
     window.server.upload(new FormData(adForm), successHandler, errorHandler);
+    adForm.reset();
+    deactivate();
+    window.map.deactivateMap();
+    setAddress(window.map.getMainPinLocation());
   });
 
   resetBtn.addEventListener('click', function (evt) {

@@ -5,16 +5,16 @@
   var MAIN_PIN_WIDTH = 65;
   var MAIN_PIN_HEIGHT = 85;
 
+  var START_POINTS = {
+    'left': 570,
+    'top': 375
+  };
+
   var limits = {
     top: 130,
     right: 1150,
     bottom: 630,
     left: -25
-  };
-
-  var START_POINTS = {
-    'left': 570,
-    'top': 375
   };
 
   var map = document.querySelector('.map');
@@ -29,8 +29,6 @@
 
   var isActive = false;
   var pins = [];
-
-  // var locationNumber = 8;
 
   var removePins = function () {
     var pinsList = document.querySelectorAll('.map__pins > button:not(.map__pin--main)');
@@ -78,7 +76,7 @@
   };
 
   window.server.load(function (data) {
-    pins = data;
+    pins = data.slice(0, 5);
   }, errorHandler);
 
   var renderPins = function (offers) {
@@ -213,15 +211,14 @@
     });
   };
 
-  filterForm.addEventListener('change', function () {
+  filterForm.addEventListener('change', window.debounce(function () {
     var newPins = pins.filter(checkType)
                       .filter(checkRooms)
                       .filter(checkPrice)
                       .filter(checkGuests)
-                      .filter(checkFeature)
-                      .slice(0, 5);
+                      .filter(checkFeature);
     removePins();
     renderPins(newPins);
-  });
+  }));
 })();
 
