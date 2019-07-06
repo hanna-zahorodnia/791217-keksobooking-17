@@ -30,8 +30,6 @@
   var isActive = false;
   var pins = [];
 
-  // var locationNumber = 8;
-
   var removePins = function () {
     var pinsList = document.querySelectorAll('.map__pins > button:not(.map__pin--main)');
     for (var i = 0; i < pinsList.length; i++) {
@@ -78,7 +76,7 @@
   };
 
   window.server.load(function (data) {
-    pins = data;
+    pins = data.slice(0, 5);
   }, errorHandler);
 
   var renderPins = function (offers) {
@@ -213,15 +211,14 @@
     });
   };
 
-  filterForm.addEventListener('change', function () {
+  filterForm.addEventListener('change', window.debounce(function () {
     var newPins = pins.filter(checkType)
                       .filter(checkRooms)
                       .filter(checkPrice)
                       .filter(checkGuests)
-                      .filter(checkFeature)
-                      .slice(0, 5);
+                      .filter(checkFeature);
     removePins();
     renderPins(newPins);
-  });
+  }));
 })();
 
