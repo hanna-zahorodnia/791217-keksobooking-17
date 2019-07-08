@@ -1,14 +1,14 @@
 'use strict';
 (function () {
 
-  var OFFER_TYPES = {
-    'palace': 10000,
-    'flat': 1000,
-    'house': 5000,
-    'bungalo': 0
-  };
-
   var FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
+
+  var OfferTypes = {
+    'PALACE': 10000,
+    'FLAT': 1000,
+    'HOUSE': 5000,
+    'BUNGALO': 0
+  };
 
   var roomsToCapacity = {
     '1': [1],
@@ -30,6 +30,7 @@
   var departure = document.querySelector('#timeout');
   var roomsSelect = document.querySelector('#room_number');
   var capacity = document.querySelector('#capacity');
+  var capacityOptions = capacity.querySelectorAll('option');
 
   var avatarChooser = adForm.querySelector('.ad-form-header__input');
   var preview = adForm.querySelector('.ad-form-header__preview img');
@@ -40,10 +41,10 @@
   var resetBtn = document.querySelector('.ad-form__reset');
 
   var makeDisabled = function (items, value) {
-    for (var i = 0; i < items.length; i++) {
-      var item = items[i];
+    items.forEach(function (el) {
+      var item = el;
       item.disabled = value;
-    }
+    });
   };
 
   var deactivate = function () {
@@ -58,6 +59,7 @@
     makeDisabled(fieldsets, false);
     makeDisabled(filterOptions, false);
     makeDisabled(filterFieldset, false);
+    onChangeRoom();
   };
 
   var setAddress = function (coordinates) {
@@ -73,8 +75,8 @@
   var onChangeType = function () {
     var priceInput = document.querySelector('#price');
     var selectedOptionValue = typeSelect.value;
-    priceInput.placeholder = OFFER_TYPES[selectedOptionValue];
-    priceInput.min = OFFER_TYPES[selectedOptionValue];
+    priceInput.placeholder = OfferTypes[selectedOptionValue.toUpperCase()];
+    priceInput.min = OfferTypes[selectedOptionValue.toUpperCase()];
   };
 
   typeSelect.addEventListener('change', onChangeType);
@@ -105,14 +107,10 @@
       capacity.value = roomsToCapacity['100'];
     }
     var roomsArray = roomsToCapacity[selectedOptionValue];
-    for (var i = 0; i < capacity.length; i++) {
-      var capacityValue = parseInt(capacity[i].value, 10);
-      if (roomsArray.indexOf(capacityValue) < 0) {
-        capacity[i].disabled = true;
-      } else {
-        capacity[i].disabled = false;
-      }
-    }
+    capacityOptions.forEach(function (el) {
+      var capacityValue = parseInt(el.value, 10);
+      el.disabled = roomsArray.indexOf(capacityValue) < 0 ? true : false;
+    });
   };
 
   roomsSelect.addEventListener('change', onChangeRoom);
@@ -177,7 +175,7 @@
     window.server.upload(new FormData(adForm), successHandler, errorHandler);
     adForm.reset();
     deactivate();
-    window.map.deactivateMap();
+    window.map.deactivate();
     setAddress(window.map.getMainPinLocation());
   });
 
@@ -185,8 +183,7 @@
     evt.preventDefault();
     adForm.reset();
     deactivate();
-    window.map.deactivateMap();
+    window.map.deactivate();
     setAddress(window.map.getMainPinLocation());
   });
 })();
-

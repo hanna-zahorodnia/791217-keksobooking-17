@@ -41,7 +41,7 @@
   var close = function () {
     var result = main.querySelector('.success') || main.querySelector('.error');
     if (result.className === 'error') {
-      window.map.deactivateMap();
+      window.map.deactivate();
       window.form.deactivate();
     }
     main.removeChild(result);
