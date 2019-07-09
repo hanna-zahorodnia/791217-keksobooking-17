@@ -5,16 +5,16 @@
   var MAIN_PIN_WIDTH = 65;
   var MAIN_PIN_HEIGHT = 85;
 
-  var START_POINTS = {
-    'left': 570,
-    'top': 375
+  var StartPoints = {
+    'LEFT': 570,
+    'TOP': 375
   };
 
-  var limits = {
-    top: 130,
-    right: 1150,
-    bottom: 630,
-    left: -25
+  var Limits = {
+    TOP: 130,
+    RIGHT: 1150,
+    BOTTOM: 630,
+    LEFT: -25
   };
 
   var map = document.querySelector('.map');
@@ -32,15 +32,15 @@
 
   var removePins = function () {
     var pinsList = document.querySelectorAll('.map__pins > button:not(.map__pin--main)');
-    for (var i = 0; i < pinsList.length; i++) {
-      pinsList[i].remove();
-    }
+    pinsList.forEach(function (el) {
+      el.remove();
+    });
   };
 
-  var deactivateMap = function () {
+  var deactivate = function () {
     map.classList.add('map--faded');
-    mainPin.style.left = START_POINTS['left'] + 'px';
-    mainPin.style.top = START_POINTS['top'] + 'px';
+    mainPin.style.left = StartPoints['LEFT'] + 'px';
+    mainPin.style.top = StartPoints['TOP'] + 'px';
     removePins();
     isActive = false;
   };
@@ -75,15 +75,11 @@
     window.result.showError();
   };
 
-  window.server.load(function (data) {
-    pins = data.slice(0, 5);
-  }, errorHandler);
-
   var renderPins = function (offers) {
     var fragment = document.createDocumentFragment();
-    for (var i = 0; i < offers.length; i++) {
-      fragment.appendChild(renderPin(offers[i]));
-    }
+    offers.forEach(function (el) {
+      fragment.appendChild(renderPin(el));
+    });
 
     mapPins.appendChild(fragment);
   };
@@ -100,7 +96,7 @@
 
   window.map = {
     getMainPinLocation: getMainPinLocation,
-    deactivateMap: deactivateMap,
+    deactivate: deactivate,
   };
 
   window.form.deactivate();
@@ -119,7 +115,10 @@
 
       if (!isActive) {
         activatePage();
-        renderPins(pins);
+        window.server.load(function (data) {
+          pins = data;
+          renderPins(pins.slice(0, 5));
+        }, errorHandler);
       }
       isActive = true;
 
@@ -136,10 +135,10 @@
       var shiftX = (mainPin.offsetLeft - shift.x);
       var shiftY = (mainPin.offsetTop - shift.y);
 
-      shiftX = Math.min(shiftX, limits.right);
-      shiftX = Math.max(shiftX, limits.left);
-      shiftY = Math.min(shiftY, limits.bottom);
-      shiftY = Math.max(shiftY, limits.top);
+      shiftX = Math.min(shiftX, Limits.RIGHT);
+      shiftX = Math.max(shiftX, Limits.LEFT);
+      shiftY = Math.min(shiftY, Limits.BOTTOM);
+      shiftY = Math.max(shiftY, Limits.TOP);
 
       mainPin.style.left = shiftX + 'px';
       mainPin.style.top = shiftY + 'px';
@@ -172,36 +171,22 @@
 
   var checkType = function (item) {
     var selectedHousingType = housingTypeSelect.value;
-    if (selectedHousingType === 'any') {
-      return item.offer.type;
-    }
-    return item.offer.type === selectedHousingType;
+    return (selectedHousingType === 'any') ? item.offer.type : item.offer.type === selectedHousingType;
+
   };
 
   var checkRooms = function (item) {
     var selectedRoomNumber = housingRoomSelect.value;
-    if (selectedRoomNumber === 'any') {
-      return true;
-    }
-    return item.offer.rooms.toString() === selectedRoomNumber;
+    return (selectedRoomNumber === 'any') ? true : item.offer.rooms.toString() === selectedRoomNumber;
   };
 
   var checkGuests = function (item) {
-    var selectedGuestNumber = housingGuestSelect.value;
-    if (selectedGuestNumber === 'any') {
-      return true;
-    } else if (selectedGuestNumber === '0') {
-      return false;
-    }
-    return item.offer.guests.toString() === selectedGuestNumber;
+    return housingGuestSelect.value === 'any' ? true : item.offer.guests >= housingGuestSelect.value;
   };
 
   var checkPrice = function (item) {
     var selectedHousingPrice = housingPriceSelect.value;
-    if (selectedHousingPrice === 'any') {
-      return item.offer.price;
-    }
-    return calculatePriceinWords(item.offer.price) === selectedHousingPrice;
+    return (selectedHousingPrice === 'any') ? item.offer.price : calculatePriceinWords(item.offer.price) === selectedHousingPrice;
   };
 
   var checkFeature = function (item) {
@@ -216,8 +201,10 @@
                       .filter(checkRooms)
                       .filter(checkPrice)
                       .filter(checkGuests)
-                      .filter(checkFeature);
+                      .filter(checkFeature)
+                      .slice(0, 5);
     removePins();
+    window.card.hide();
     renderPins(newPins);
   }));
 })();
