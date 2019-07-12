@@ -6,8 +6,8 @@
   var MAIN_PIN_HEIGHT = 85;
 
   var StartPoints = {
-    'LEFT': 570,
-    'TOP': 375
+    LEFT: 570,
+    TOP: 375
   };
 
   var Limits = {
@@ -39,8 +39,8 @@
 
   var deactivate = function () {
     map.classList.add('map--faded');
-    mainPin.style.left = StartPoints['LEFT'] + 'px';
-    mainPin.style.top = StartPoints['TOP'] + 'px';
+    mainPin.style.left = StartPoints.LEFT + 'px';
+    mainPin.style.top = StartPoints.TOP + 'px';
     removePins();
     isActive = false;
   };
@@ -186,7 +186,7 @@
 
   var checkPrice = function (item) {
     var selectedHousingPrice = housingPriceSelect.value;
-    return (selectedHousingPrice === 'any') ? item.offer.price : calculatePriceinWords(item.offer.price) === selectedHousingPrice;
+    return (selectedHousingPrice === 'any') ? true : calculatePriceinWords(item.offer.price) === selectedHousingPrice;
   };
 
   var checkFeature = function (item) {
