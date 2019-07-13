@@ -176,6 +176,7 @@
     adForm.reset();
     deactivate();
     window.map.deactivate();
+    window.card.hide();
     setAddress(window.map.getMainPinLocation());
   });
 
@@ -184,6 +185,7 @@
     adForm.reset();
     deactivate();
     window.map.deactivate();
+    window.card.hide();
     setAddress(window.map.getMainPinLocation());
   });
 })();
